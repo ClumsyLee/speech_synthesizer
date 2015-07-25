@@ -1,86 +1,86 @@
 function speechproc()
 
-    % ¶¨Òå³£Êý
-    FL = 80;                % Ö¡³¤
-    WL = 240;               % ´°³¤
-    P = 10;                 % Ô¤²âÏµÊý¸öÊý
-    s = readspeech('voice.pcm',100000);             % ÔØÈëÓïÒôs
-    L = length(s);          % ¶ÁÈëÓïÒô³¤¶È
-    FN = floor(L/FL)-2;     % ¼ÆËãÖ¡Êý
-    % Ô¤²âºÍÖØ½¨ÂË²¨Æ÷
-    exc = zeros(L,1);       % ¼¤ÀøÐÅºÅ£¨Ô¤²âÎó²î£©
-    zi_pre = zeros(P,1);    % Ô¤²âÂË²¨Æ÷µÄ×´Ì¬
-    s_rec = zeros(L,1);     % ÖØ½¨ÓïÒô
+    % å®šä¹‰å¸¸æ•°
+    FL = 80;                % å¸§é•¿
+    WL = 240;               % çª—é•¿
+    P = 10;                 % é¢„æµ‹ç³»æ•°ä¸ªæ•°
+    s = readspeech('voice.pcm',100000);             % è½½å…¥è¯­éŸ³s
+    L = length(s);          % è¯»å…¥è¯­éŸ³é•¿åº¦
+    FN = floor(L/FL)-2;     % è®¡ç®—å¸§æ•°
+    % é¢„æµ‹å’Œé‡å»ºæ»¤æ³¢å™¨
+    exc = zeros(L,1);       % æ¿€åŠ±ä¿¡å·ï¼ˆé¢„æµ‹è¯¯å·®ï¼‰
+    zi_pre = zeros(P,1);    % é¢„æµ‹æ»¤æ³¢å™¨çš„çŠ¶æ€
+    s_rec = zeros(L,1);     % é‡å»ºè¯­éŸ³
     zi_rec = zeros(P,1);
-    % ºÏ³ÉÂË²¨Æ÷
-    exc_syn = zeros(L,1);   % ºÏ³ÉµÄ¼¤ÀøÐÅºÅ£¨Âö³å´®£©
-    s_syn = zeros(L,1);     % ºÏ³ÉÓïÒô
-    % ±äµ÷²»±äËÙÂË²¨Æ÷
-    exc_syn_t = zeros(L,1);   % ºÏ³ÉµÄ¼¤ÀøÐÅºÅ£¨Âö³å´®£©
-    s_syn_t = zeros(L,1);     % ºÏ³ÉÓïÒô
-    % ±äËÙ²»±äµ÷ÂË²¨Æ÷£¨¼ÙÉèËÙ¶È¼õÂýÒ»±¶£©
-    exc_syn_v = zeros(2*L,1);   % ºÏ³ÉµÄ¼¤ÀøÐÅºÅ£¨Âö³å´®£©
-    s_syn_v = zeros(2*L,1);     % ºÏ³ÉÓïÒô
+    % åˆæˆæ»¤æ³¢å™¨
+    exc_syn = zeros(L,1);   % åˆæˆçš„æ¿€åŠ±ä¿¡å·ï¼ˆè„‰å†²ä¸²ï¼‰
+    s_syn = zeros(L,1);     % åˆæˆè¯­éŸ³
+    % å˜è°ƒä¸å˜é€Ÿæ»¤æ³¢å™¨
+    exc_syn_t = zeros(L,1);   % åˆæˆçš„æ¿€åŠ±ä¿¡å·ï¼ˆè„‰å†²ä¸²ï¼‰
+    s_syn_t = zeros(L,1);     % åˆæˆè¯­éŸ³
+    % å˜é€Ÿä¸å˜è°ƒæ»¤æ³¢å™¨ï¼ˆå‡è®¾é€Ÿåº¦å‡æ…¢ä¸€å€ï¼‰
+    exc_syn_v = zeros(2*L,1);   % åˆæˆçš„æ¿€åŠ±ä¿¡å·ï¼ˆè„‰å†²ä¸²ï¼‰
+    s_syn_v = zeros(2*L,1);     % åˆæˆè¯­éŸ³
 
-    hw = hamming(WL);       % ººÃ÷´°
-    
-    % ÒÀ´Î´¦ÀíÃ¿Ö¡ÓïÒô
+    hw = hamming(WL);       % æ±‰æ˜Žçª—
+
+    % ä¾æ¬¡å¤„ç†æ¯å¸§è¯­éŸ³
     for n = 3:FN
 
-        % ¼ÆËãÔ¤²âÏµÊý£¨²»ÐèÒªÕÆÎÕ£©
-        s_w = s(n*FL-WL+1:n*FL).*hw;    %ººÃ÷´°¼ÓÈ¨ºóµÄÓïÒô
-        [A E] = lpc(s_w, P);            %ÓÃÏßÐÔÔ¤²â·¨¼ÆËãP¸öÔ¤²âÏµÊý
-                                        % AÊÇÔ¤²âÏµÊý£¬E»á±»ÓÃÀ´¼ÆËãºÏ³É¼¤ÀøµÄÄÜÁ¿
+        % è®¡ç®—é¢„æµ‹ç³»æ•°ï¼ˆä¸éœ€è¦æŽŒæ¡ï¼‰
+        s_w = s(n*FL-WL+1:n*FL).*hw;    %æ±‰æ˜Žçª—åŠ æƒåŽçš„è¯­éŸ³
+        [A E] = lpc(s_w, P);            %ç”¨çº¿æ€§é¢„æµ‹æ³•è®¡ç®—Pä¸ªé¢„æµ‹ç³»æ•°
+                                        % Aæ˜¯é¢„æµ‹ç³»æ•°ï¼ŒEä¼šè¢«ç”¨æ¥è®¡ç®—åˆæˆæ¿€åŠ±çš„èƒ½é‡
 
         if n == 27
-        % (3) ÔÚ´ËÎ»ÖÃÐ´³ÌÐò£¬¹Û²ìÔ¤²âÏµÍ³µÄÁã¼«µãÍ¼
-            
+        % (3) åœ¨æ­¤ä½ç½®å†™ç¨‹åºï¼Œè§‚å¯Ÿé¢„æµ‹ç³»ç»Ÿçš„é›¶æžç‚¹å›¾
+
         end
-        
-        s_f = s((n-1)*FL+1:n*FL);       % ±¾Ö¡ÓïÒô£¬ÏÂÃæ¾ÍÒª¶ÔËü×ö´¦Àí
 
-        % (4) ÔÚ´ËÎ»ÖÃÐ´³ÌÐò£¬ÓÃfilterº¯Êýs_f¼ÆËã¼¤Àø£¬×¢Òâ±£³ÖÂË²¨Æ÷×´Ì¬
+        s_f = s((n-1)*FL+1:n*FL);       % æœ¬å¸§è¯­éŸ³ï¼Œä¸‹é¢å°±è¦å¯¹å®ƒåšå¤„ç†
 
-        
-        % exc((n-1)*FL+1:n*FL) = ... ½«Äã¼ÆËãµÃµ½µÄ¼¤ÀøÐ´ÔÚÕâÀï
+        % (4) åœ¨æ­¤ä½ç½®å†™ç¨‹åºï¼Œç”¨filterå‡½æ•°s_fè®¡ç®—æ¿€åŠ±ï¼Œæ³¨æ„ä¿æŒæ»¤æ³¢å™¨çŠ¶æ€
 
-        % (5) ÔÚ´ËÎ»ÖÃÐ´³ÌÐò£¬ÓÃfilterº¯ÊýºÍexcÖØ½¨ÓïÒô£¬×¢Òâ±£³ÖÂË²¨Æ÷×´Ì¬
 
-        
-        % s_rec((n-1)*FL+1:n*FL) = ... ½«Äã¼ÆËãµÃµ½µÄÖØ½¨ÓïÒôÐ´ÔÚÕâÀï
+        % exc((n-1)*FL+1:n*FL) = ... å°†ä½ è®¡ç®—å¾—åˆ°çš„æ¿€åŠ±å†™åœ¨è¿™é‡Œ
 
-        % ×¢ÒâÏÂÃæÖ»ÓÐÔÚµÃµ½excºó²Å»á¼ÆËãÕýÈ·
+        % (5) åœ¨æ­¤ä½ç½®å†™ç¨‹åºï¼Œç”¨filterå‡½æ•°å’Œexcé‡å»ºè¯­éŸ³ï¼Œæ³¨æ„ä¿æŒæ»¤æ³¢å™¨çŠ¶æ€
+
+
+        % s_rec((n-1)*FL+1:n*FL) = ... å°†ä½ è®¡ç®—å¾—åˆ°çš„é‡å»ºè¯­éŸ³å†™åœ¨è¿™é‡Œ
+
+        % æ³¨æ„ä¸‹é¢åªæœ‰åœ¨å¾—åˆ°excåŽæ‰ä¼šè®¡ç®—æ­£ç¡®
         s_Pitch = exc(n*FL-222:n*FL);
-        PT = findpitch(s_Pitch);    % ¼ÆËã»ùÒôÖÜÆÚPT£¨²»ÒªÇóÕÆÎÕ£©
-        G = sqrt(E*PT);           % ¼ÆËãºÏ³É¼¤ÀøµÄÄÜÁ¿G£¨²»ÒªÇóÕÆÎÕ£©
+        PT = findpitch(s_Pitch);    % è®¡ç®—åŸºéŸ³å‘¨æœŸPTï¼ˆä¸è¦æ±‚æŽŒæ¡ï¼‰
+        G = sqrt(E*PT);           % è®¡ç®—åˆæˆæ¿€åŠ±çš„èƒ½é‡Gï¼ˆä¸è¦æ±‚æŽŒæ¡ï¼‰
 
-        
-        % (10) ÔÚ´ËÎ»ÖÃÐ´³ÌÐò£¬Éú³ÉºÏ³É¼¤Àø£¬²¢ÓÃ¼¤ÀøºÍfilterº¯Êý²úÉúºÏ³ÉÓïÒô
 
-        
-        % exc_syn((n-1)*FL+1:n*FL) = ... ½«Äã¼ÆËãµÃµ½µÄºÏ³É¼¤ÀøÐ´ÔÚÕâÀï
-        % s_syn((n-1)*FL+1:n*FL) = ...   ½«Äã¼ÆËãµÃµ½µÄºÏ³ÉÓïÒôÐ´ÔÚÕâÀï
+        % (10) åœ¨æ­¤ä½ç½®å†™ç¨‹åºï¼Œç”Ÿæˆåˆæˆæ¿€åŠ±ï¼Œå¹¶ç”¨æ¿€åŠ±å’Œfilterå‡½æ•°äº§ç”Ÿåˆæˆè¯­éŸ³
 
-        % (11) ²»¸Ä±ä»ùÒôÖÜÆÚºÍÔ¤²âÏµÊý£¬½«ºÏ³É¼¤ÀøµÄ³¤¶ÈÔö¼ÓÒ»±¶£¬ÔÙ×÷Îªfilter
-        % µÄÊäÈëµÃµ½ÐÂµÄºÏ³ÉÓïÒô£¬ÌýÒ»ÌýÊÇ²»ÊÇËÙ¶È±äÂýÁË£¬µ«Òôµ÷Ã»ÓÐ±ä¡£
 
-        
-        % exc_syn_v((n-1)*FL_v+1:n*FL_v) = ... ½«Äã¼ÆËãµÃµ½µÄ¼Ó³¤ºÏ³É¼¤ÀøÐ´ÔÚÕâÀï
-        % s_syn_v((n-1)*FL_v+1:n*FL_v) = ...   ½«Äã¼ÆËãµÃµ½µÄ¼Ó³¤ºÏ³ÉÓïÒôÐ´ÔÚÕâÀï
-        
-        % (13) ½«»ùÒôÖÜÆÚ¼õÐ¡Ò»°ë£¬½«¹²Õñ·åÆµÂÊÔö¼Ó150Hz£¬ÖØÐÂºÏ³ÉÓïÒô£¬ÌýÌýÊÇÉ¶¸ÐÊÜ¡«
+        % exc_syn((n-1)*FL+1:n*FL) = ... å°†ä½ è®¡ç®—å¾—åˆ°çš„åˆæˆæ¿€åŠ±å†™åœ¨è¿™é‡Œ
+        % s_syn((n-1)*FL+1:n*FL) = ...   å°†ä½ è®¡ç®—å¾—åˆ°çš„åˆæˆè¯­éŸ³å†™åœ¨è¿™é‡Œ
 
-        
-        % exc_syn_t((n-1)*FL+1:n*FL) = ... ½«Äã¼ÆËãµÃµ½µÄ±äµ÷ºÏ³É¼¤ÀøÐ´ÔÚÕâÀï
-        % s_syn_t((n-1)*FL+1:n*FL) = ...   ½«Äã¼ÆËãµÃµ½µÄ±äµ÷ºÏ³ÉÓïÒôÐ´ÔÚÕâÀï
-        
+        % (11) ä¸æ”¹å˜åŸºéŸ³å‘¨æœŸå’Œé¢„æµ‹ç³»æ•°ï¼Œå°†åˆæˆæ¿€åŠ±çš„é•¿åº¦å¢žåŠ ä¸€å€ï¼Œå†ä½œä¸ºfilter
+        % çš„è¾“å…¥å¾—åˆ°æ–°çš„åˆæˆè¯­éŸ³ï¼Œå¬ä¸€å¬æ˜¯ä¸æ˜¯é€Ÿåº¦å˜æ…¢äº†ï¼Œä½†éŸ³è°ƒæ²¡æœ‰å˜ã€‚
+
+
+        % exc_syn_v((n-1)*FL_v+1:n*FL_v) = ... å°†ä½ è®¡ç®—å¾—åˆ°çš„åŠ é•¿åˆæˆæ¿€åŠ±å†™åœ¨è¿™é‡Œ
+        % s_syn_v((n-1)*FL_v+1:n*FL_v) = ...   å°†ä½ è®¡ç®—å¾—åˆ°çš„åŠ é•¿åˆæˆè¯­éŸ³å†™åœ¨è¿™é‡Œ
+
+        % (13) å°†åŸºéŸ³å‘¨æœŸå‡å°ä¸€åŠï¼Œå°†å…±æŒ¯å³°é¢‘çŽ‡å¢žåŠ 150Hzï¼Œé‡æ–°åˆæˆè¯­éŸ³ï¼Œå¬å¬æ˜¯å•¥æ„Ÿå—ï½ž
+
+
+        % exc_syn_t((n-1)*FL+1:n*FL) = ... å°†ä½ è®¡ç®—å¾—åˆ°çš„å˜è°ƒåˆæˆæ¿€åŠ±å†™åœ¨è¿™é‡Œ
+        % s_syn_t((n-1)*FL+1:n*FL) = ...   å°†ä½ è®¡ç®—å¾—åˆ°çš„å˜è°ƒåˆæˆè¯­éŸ³å†™åœ¨è¿™é‡Œ
+
     end
 
-    % (6) ÔÚ´ËÎ»ÖÃÐ´³ÌÐò£¬ÌýÒ»Ìý s £¬exc ºÍ s_rec ÓÐºÎÇø±ð£¬½âÊÍÕâÖÖÇø±ð
-    % ºóÃæÌýÓïÒôµÄÌâÄ¿Ò²¶¼¿ÉÒÔÔÚÕâÀïÐ´£¬²»ÔÙ×öÌØ±ð×¢Ã÷
-    
+    % (6) åœ¨æ­¤ä½ç½®å†™ç¨‹åºï¼Œå¬ä¸€å¬ s ï¼Œexc å’Œ s_rec æœ‰ä½•åŒºåˆ«ï¼Œè§£é‡Šè¿™ç§åŒºåˆ«
+    % åŽé¢å¬è¯­éŸ³çš„é¢˜ç›®ä¹Ÿéƒ½å¯ä»¥åœ¨è¿™é‡Œå†™ï¼Œä¸å†åšç‰¹åˆ«æ³¨æ˜Ž
 
-    % ±£´æËùÓÐÎÄ¼þ
+
+    % ä¿å­˜æ‰€æœ‰æ–‡ä»¶
     writespeech('exc.pcm',exc);
     writespeech('rec.pcm',s_rec);
     writespeech('exc_syn.pcm',exc_syn);
@@ -91,21 +91,21 @@ function speechproc()
     writespeech('syn_v.pcm',s_syn_v);
 return
 
-% ´ÓPCMÎÄ¼þÖÐ¶ÁÈëÓïÒô
+% ä»ŽPCMæ–‡ä»¶ä¸­è¯»å…¥è¯­éŸ³
 function s = readspeech(filename, L)
     fid = fopen(filename, 'r');
     s = fread(fid, L, 'int16');
     fclose(fid);
 return
 
-% Ð´ÓïÒôµ½PCMÎÄ¼þÖÐ
+% å†™è¯­éŸ³åˆ°PCMæ–‡ä»¶ä¸­
 function writespeech(filename,s)
     fid = fopen(filename,'w');
     fwrite(fid, s, 'int16');
     fclose(fid);
 return
 
-% ¼ÆËãÒ»¶ÎÓïÒôµÄ»ùÒôÖÜÆÚ£¬²»ÒªÇóÕÆÎÕ
+% è®¡ç®—ä¸€æ®µè¯­éŸ³çš„åŸºéŸ³å‘¨æœŸï¼Œä¸è¦æ±‚æŽŒæ¡
 function PT = findpitch(s)
 [B, A] = butter(5, 700/4000);
 s = filter(B,A,s);
