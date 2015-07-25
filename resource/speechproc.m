@@ -40,9 +40,7 @@ function speechproc()
         s_f = s((n-1)*FL+1:n*FL);       % 本帧语音，下面就要对它做处理
 
         % (4) 在此位置写程序，用filter函数s_f计算激励，注意保持滤波器状态
-
-
-        % exc((n-1)*FL+1:n*FL) = ... 将你计算得到的激励写在这里
+        [exc((n-1)*FL+1:n*FL), zi_pre)] = filter(A, 1, s_f, zi_pre);
 
         % (5) 在此位置写程序，用filter函数和exc重建语音，注意保持滤波器状态
 
