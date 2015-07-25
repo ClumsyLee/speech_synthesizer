@@ -27,7 +27,7 @@ saveas(gcf, '../report/zplane', 'png');
 figure
 [H, F] = freqz(b, a, 512, f_sample);
 [max_value, max_index] = max(H);
-f_peak = F(max_index)
+fprintf('Formant = %.2f Hz\n', F(max_index));
 
 saveas(gcf, '../report/freqz', 'png');
 
@@ -40,11 +40,9 @@ stem(n, y);
 saveas(gcf, '../report/impz_filter', 'png');
 ```
 
-结果如图：
+输出：
 
-    f_peak =
-    
-            1000
+    Formant = 1000.00 Hz
 
 ![zplane](zplane.png)
 
