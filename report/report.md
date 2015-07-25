@@ -103,7 +103,71 @@ end
     filter(1, A, exc((n-1)*FL+1:n*FL), zi_rec);
 ```
 
-### 1.6
+### 1.6 对比 `s(n)`, `e(n)`, `s^(n)`
+
+先试听
+
+```matlab
+% (6) 在此位置写程序，听一听 s ，exc 和 s_rec 有何区别，解释这种区别
+% 后面听语音的题目也都可以在这里写，不再做特别注明
+sound(s);
+pause(2);
+sound(exc);
+pause(2);
+sound(s_rec);
+```
+
+可以听出来，`s(n)` 和 `s^(n)` 几乎没有区别，都是带有杂音的“电灯比油灯进步多了”；而 `e(n)` 信号听起来虽然也是这句话，但是话的音量变小了不少，杂音也变得很重。
+
+这是因为 `s^(n)` 信号几乎是 `s(n)` 的复原，而 `e(n)` 信号则是原声音减去预测值之后的残差。所以，能较好符合发声模型的部分（人声）被大幅减弱，而不能很好被模型预测的部分（噪声）便占据了主导地位。这个现象的存在说明预测模型是成功的，能够起到压缩信息的作用。
+
+将这三个信号画出：
+
+```matlab
+t = [0:L-1] / 8000;
+
+figure
+subplot 311
+plot(t, s);
+ylabel s(n)
+
+subplot 312
+plot(t, exc);
+ylabel e(n)
+
+subplot 313
+plot(t, s_rec);
+xlabel 't / s'
+ylabel s\^(n)
+```
+
+![Wave compare](wave_compare.png)
+
+从图上可以看出，`s^(n)` 和 `s(n)` 几乎没有区别，而 `e(n)` 的波形虽然在形状上相近，但幅度有明显的减小（注意中图纵坐标比例与上下两图不一样），而且波形显得“干瘦”了不少。这正是预测模型有效的标志。
+
+取 1 ~ 1.2s 处的波形：
+
+```matlab
+t_range = (t > 1 & t < 1.2);
+
+figure
+subplot 311
+plot(t(t_range), s(t_range));
+ylabel s(n)
+
+subplot 312
+plot(t(t_range), exc(t_range));
+ylabel e(n)
+
+subplot 313
+plot(t(t_range), s_rec(t_range));
+xlabel 't / s'
+ylabel s\^(n)
+```
+
+![Wave compare (1 ~ 2s)](wave_local_compare.png)
+
+可以看到，`e(t)` 的波形已经趋近于噪声，周期明显的人声部分已经基本被滤去。
 
 ### 1.7
 
