@@ -94,7 +94,14 @@ end
 [exc((n-1)*FL+1:n*FL), zi_pre)] = filter(A, 1, s_f, zi_pre);
 ```
 
-### 1.5
+### 1.5 重建语音信号 `s^(n)`
+
+与上题一样，只要将 `filter` 函数的 `A`, `B` 参数对调，将 `e(n)` 作为输入传入，同时将状态保存在 `zi_rec` 中即可。代码如下：
+
+```matlab
+[s_rec((n-1)*FL+1:n*FL), zi_rec] = ...
+    filter(1, A, exc((n-1)*FL+1:n*FL), zi_rec);
+```
 
 ### 1.6
 

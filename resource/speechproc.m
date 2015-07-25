@@ -43,9 +43,8 @@ function speechproc()
         [exc((n-1)*FL+1:n*FL), zi_pre] = filter(A, 1, s_f, zi_pre);
 
         % (5) 在此位置写程序，用filter函数和exc重建语音，注意保持滤波器状态
-
-
-        % s_rec((n-1)*FL+1:n*FL) = ... 将你计算得到的重建语音写在这里
+        [s_rec((n-1)*FL+1:n*FL), zi_rec] = ...
+            filter(1, A, exc((n-1)*FL+1:n*FL), zi_rec);
 
         % 注意下面只有在得到exc后才会计算正确
         s_Pitch = exc(n*FL-222:n*FL);
