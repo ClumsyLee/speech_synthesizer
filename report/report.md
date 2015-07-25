@@ -68,7 +68,19 @@ saveas(gcf, '../report/impz_filter', 'png');
 
 其中 PCM 文件中数据都是以 `int16` 的形式保存的。
 
-### 1.3
+### 1.3 观察 27 帧时的零极点分布
+
+直接调用 `zplane` 即可：
+
+```matlab
+if n == 27
+    zplane(1, A);
+end
+```
+
+结果如图，一共有 5 对共轭的极点。
+
+![Z plane on frame 27](zplane_27.png)
 
 ### 1.4
 
