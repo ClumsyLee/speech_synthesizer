@@ -13,7 +13,6 @@ figure
 [H, F] = freqz(b, a, 512, f_sample);
 [max_value, max_index] = max(H);
 fprintf('Formant = %.2f Hz\n', F(max_index));
-
 saveas(gcf, '../report/freqz', 'png');
 
 figure
