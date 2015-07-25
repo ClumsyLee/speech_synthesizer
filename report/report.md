@@ -201,7 +201,30 @@ sound(gen_sample_sig(300, f_sample, duration), f_sample);
 
 两个音听起来都像是单音，其中 300 Hz 的音（毫不意外地）听起来更高一些。
 
-### 2.2
+### 2.2 生成分段单位样值信号
+
+为了生成分段单位样值信号，我们对 2.1 中的 gen_sample_sig 函数进行改进。具体方法则是
+
+```matlab
+%% gen_sample_sig: Generate sample signal.
+function sig = gen_sample_sig(f, f_sample, duration)
+    sig = [];
+    offset = 0;
+    for k = 1:length(f)   % For every part.
+        period = floor(f_sample / f(k));
+        len = floor(f_sample * duration(k));
+        if len <= offset  % Skip this part.
+            sig = [sig; zeros(len, 1)];
+            offset = offset - len;
+        else
+            len = len - offset;
+            % Skip first `offset` elements.
+            t = [zeros(1, offset), 1:len]';
+            sig = [sig; double(mod(t, period) == 1)];
+            offset = mod(period - mod(len, period), period);
+        end
+    end
+```
 
 ### 2.3
 

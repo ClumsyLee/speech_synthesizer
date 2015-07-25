@@ -1,10 +1,17 @@
 %% gen_sample_sig: Generate sample signal.
 function sig = gen_sample_sig(f, f_sample, duration)
+    % If a number is given, assumn it is a general duration.
+    if length(duration) == 1
+        duration = duration * ones(size(f_sample));
+    end
+
     sig = [];
     offset = 0;
+
     for k = 1:length(f)   % For every part.
         period = floor(f_sample / f(k));
         len = floor(f_sample * duration(k));
+
         if len <= offset  % Skip this part.
             sig = [sig; zeros(len, 1)];
             offset = offset - len;
