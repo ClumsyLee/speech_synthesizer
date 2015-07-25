@@ -171,7 +171,35 @@ ylabel s\^(n)
 
 ## 2. 语音合成模型
 
-### 2.1
+### 2.1 生成单位样值“串”
+
+从表达式中可以看出：
+
+    N = floor(f_sample / f)
+    NS = f
+
+故可以写出生成函数如下：
+
+```matlab
+%% gen_sample_sig: Generate sample signal.
+function sig = gen_sample_sig(f, f_sample, duration)
+    period = floor(f_sample / f);
+    t = [1 : f_sample * duration]';
+    sig = double(mod(t, period) == 0);
+```
+
+测试 200 Hz 和 300 Hz 的单位样值“串”：
+
+```matlab
+f_sample = 8000;
+duration = 1;
+
+sound(gen_sample_sig(200, f_sample, duration), f_sample);
+pause(duration + 1);  % Make a 1s interval.
+sound(gen_sample_sig(300, f_sample, duration), f_sample);
+```
+
+两个音听起来都像是单音，其中 300 Hz 的音（毫不意外地）听起来更高一些。
 
 ### 2.2
 
