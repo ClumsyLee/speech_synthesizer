@@ -74,6 +74,7 @@ saveas(gcf, '../report/impz_filter', 'png');
 
 ```matlab
 if n == 27
+    % (3) 在此位置写程序，观察预测系统的零极点图
     zplane(1, A);
 end
 ```

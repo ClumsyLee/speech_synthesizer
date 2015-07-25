@@ -33,6 +33,7 @@ function speechproc()
                                         % A是预测系数，E会被用来计算合成激励的能量
 
         if n == 27
+            % (3) 在此位置写程序，观察预测系统的零极点图
             zplane(1, A);
         end
 
