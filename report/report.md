@@ -249,7 +249,38 @@ sound(s / max(abs(s)), f_sample);  % Make sure s won't be clipped by `sound`.
 
 听起来像是喉咙发出的声音，有点像“啊啊”。
 
-### 2.4
+### 2.4 利用合成激励信号生成合成语音
+
+为了利用 PT 生成合成激励信号，我们沿用 2.2 中的思路，使用 `pos_syc` 变量来保存当前的位置：
+
+```matlab
+pos_syc = 2 * FL + 1;  % Initial pos.
+```
+
+然后便可以用同样的思路生成合成激励，并产生合成语音：
+
+```matlab
+% (10) 在此位置写程序，生成合成激励，并用激励和filter函数产生合成语音
+while pos_syc <= n * FL
+    exc_syn(pos_syc) = G;
+    pos_syc = pos_syc + PT;
+end
+
+[s_syn((n-1)*FL+1:n*FL), zi_syn] = ...
+    filter(1, A, exc_syn((n-1)*FL+1:n*FL), zi_syn);
+```
+
+最后将合成语音播放出来：
+
+```matlab
+sound(s_syn / max(abs(s_syn)), f_sample);
+```
+
+合成语音听起来也是 “电灯比油灯进步多了”，不过声音似乎不是特别自然。二者的波形比较如下：
+
+![Compare s(n) & s~(n)](compare_s_s_syn.png)
+
+可以看到，二者的包络已经十分相近了，不过具体的波形仍然有比较明显的差异。
 
 ## 3. 变速不变调
 

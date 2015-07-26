@@ -15,6 +15,8 @@ function speechproc()
     % 合成滤波器
     exc_syn = zeros(L,1);   % 合成的激励信号（脉冲串）
     s_syn = zeros(L,1);     % 合成语音
+    zi_syn = zeros(P,1);
+    pos_syc = 2 * FL + 1;   % Initial pos.
     % 变调不变速滤波器
     exc_syn_t = zeros(L,1);   % 合成的激励信号（脉冲串）
     s_syn_t = zeros(L,1);     % 合成语音
@@ -53,10 +55,13 @@ function speechproc()
 
 
         % (10) 在此位置写程序，生成合成激励，并用激励和filter函数产生合成语音
+        while pos_syc <= n * FL
+            exc_syn(pos_syc) = G;
+            pos_syc = pos_syc + PT;
+        end
 
-
-        % exc_syn((n-1)*FL+1:n*FL) = ... 将你计算得到的合成激励写在这里
-        % s_syn((n-1)*FL+1:n*FL) = ...   将你计算得到的合成语音写在这里
+        [s_syn((n-1)*FL+1:n*FL), zi_syn] = ...
+            filter(1, A, exc_syn((n-1)*FL+1:n*FL), zi_syn);
 
         % (11) 不改变基音周期和预测系数，将合成激励的长度增加一倍，再作为filter
         % 的输入得到新的合成语音，听一听是不是速度变慢了，但音调没有变。
