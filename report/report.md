@@ -322,6 +322,48 @@ sound(s_syn_v / max(abs(s_syn_v)), f_sample);
 
 ## 4. 变调不变速
 
-### 4.1
+### 4.1 提高 1.1 中系统谐振峰
+
+为了能够提高系统的谐振峰，我们先用 `roots` 函数算出系统的极点，然后将上半平面的极点逆时针旋转，下班平面的极点逆时针旋转。旋转的弧度则由下公式给出：
+
+    θ = 2π * f_delta / f_sample
+
+最后，再通过 `poly` 函数恢复成系统参数。代码实现如下：
+
+```matlab
+%% adjust_peak: Adjust the peak of a system
+function [adjusted] = adjust_peak(A, f_sample, f_delta)
+    poles = roots(A);
+    upside =   (imag(poles) > 0);
+    downside = (imag(poles) < 0);
+
+    theta = f_delta / f_sample * 2 * pi;
+    poles(upside)   = poles(upside)   * (cos(theta) + i * sin(theta));
+    poles(downside) = poles(downside) * (cos(theta) - i * sin(theta));
+
+    adjusted = poly(poles);
+```
+
+对 1.1 中的系统应用该函数：
+
+```matlab
+A = adjust_peak([1, -1.3789, 0.9506], 8000, 150)
+
+% A =
+%
+%     1.0000   -1.2073    0.9506
+```
+
+从而得到 `a1 = 1.2073, a2 = -0.9506`。
+
+查看谐振峰：
+
+```matlab
+freqz(1, A, 512, 8000);
+```
+
+![Adjusted peak](adjusted_peak.png)
+
+可以看到，谐振峰确实提高了 150 Hz。
 
 ### 4.2
