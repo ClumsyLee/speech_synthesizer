@@ -203,28 +203,34 @@ sound(gen_sample_sig(300, f_sample, duration), f_sample);
 
 ### 2.2 生成分段单位样值信号
 
-为了生成分段单位样值信号，我们对 2.1 中的 gen_sample_sig 函数进行改进。具体方法则是
+为了生成分段单位样值信号，我们重新实现 2.1 中实现过的 `gen_sample_sig` 函数。实现方法为：记录当前所处的位置，每次循环将当前位置处信号置为 1，同时根据当前位置算出要向前移动的距离，直到完全生成出信号。具体代码实现如下：
 
 ```matlab
 %% gen_sample_sig: Generate sample signal.
-function sig = gen_sample_sig(f, f_sample, duration)
-    sig = [];
-    offset = 0;
-    for k = 1:length(f)   % For every part.
-        period = floor(f_sample / f(k));
-        len = floor(f_sample * duration(k));
-        if len <= offset  % Skip this part.
-            sig = [sig; zeros(len, 1)];
-            offset = offset - len;
-        else
-            len = len - offset;
-            % Skip first `offset` elements.
-            t = [zeros(1, offset), 1:len]';
-            sig = [sig; double(mod(t, period) == 1)];
-            offset = mod(period - mod(len, period), period);
-        end
+function sig = gen_sample_sig(f_sample, duration, t_total)
+    pos = 1;
+    part_len = floor(f_sample * duration);
+    sig_len = floor(f_sample * t_total);
+    sig = zeros(sig_len, 1);
+
+    while pos <= sig_len
+        sig(pos) = 1;
+        m = ceil(pos / part_len) - 1;  % Assume start from part 0.
+        pos = pos + 80 + 5 * mod(m, 50);
     end
 ```
+
+生成信号（假设段序号从 0 开始）：
+
+```matlab
+sig = gen_sample_sig(f_sample, 0.01, 1);
+```
+
+`sig` 信号：
+
+![Sample signal](10ms_sample_sig.png)
+
+听起来像是在 0 和 0.5s 附近开始发出两个音的激励。
 
 ### 2.3
 
