@@ -224,6 +224,7 @@ function sig = gen_sample_sig(f_sample, duration, t_total)
 
 ```matlab
 sig = gen_sample_sig(f_sample, 0.01, 1);
+sound(sig, f_sample);
 ```
 
 `sig` 信号：
@@ -232,7 +233,21 @@ sig = gen_sample_sig(f_sample, 0.01, 1);
 
 听起来像是在 0 和 0.5s 附近开始发出两个音的激励。
 
-### 2.3
+### 2.3 用 2.2 中的 `e(n)` 生成 `s(n)`
+
+直接用 1.1 中的系统进行滤波。
+
+注意播放前需要将信号最大值化为 1，否则会被 `sound` 函数截去。
+
+```matlab
+s = filter(1, [1, -1.3789, 0.9506], sig);
+s = s / max(s);  % Make sure s won't be clipped by `sound`.
+sound(s, f_sample);
+```
+
+![e(n) to s(n)](en_to_sn.png)
+
+听起来像是喉咙发出的声音，有点像“啊啊”。
 
 ### 2.4
 
