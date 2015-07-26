@@ -92,6 +92,8 @@ function speechproc()
     pause(2);
     sound(s_rec / max(abs(s_rec)), f_sample);
     pause(2);
+    sound(s_syn / max(abs(s_syn)), f_sample);
+    pause(2);
     sound(s_syn_v / max(abs(s_syn_v)), f_sample);
 
     t = [0:L-1] / f_sample;

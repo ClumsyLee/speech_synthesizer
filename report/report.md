@@ -251,9 +251,10 @@ sound(s / max(abs(s)), f_sample);  % Make sure s won't be clipped by `sound`.
 
 ### 2.4 利用合成激励信号生成合成语音
 
-为了利用 PT 生成合成激励信号，我们沿用 2.2 中的思路，使用 `pos_syc` 变量来保存当前的位置：
+为了利用 PT 生成合成激励信号，我们沿用 2.2 中的思路，使用 `pos_syc` 变量来保存当前的位置，同时加入滤波器的状态变量。
 
 ```matlab
+zi_syn = zeros(P,1);
 pos_syc = 2 * FL + 1;  % Initial pos.
 ```
 
