@@ -1,6 +1,7 @@
 function speechproc()
 
     % 定义常数
+    f_sample = 8000;
     FL = 80;                % 帧长
     WL = 240;               % 窗长
     P = 10;                 % 预测系数个数
@@ -20,6 +21,8 @@ function speechproc()
     % 变调不变速滤波器
     exc_syn_t = zeros(L,1);   % 合成的激励信号（脉冲串）
     s_syn_t = zeros(L,1);     % 合成语音
+    zi_syn_t = zeros(P,1);
+    pos_syc_t = 2 * FL + 1;   % Initial pos.
     % 变速不变调滤波器（假设速度减慢一倍）
     exc_syn_v = zeros(2*L,1);   % 合成的激励信号（脉冲串）
     s_syn_v = zeros(2*L,1);     % 合成语音
@@ -77,15 +80,19 @@ function speechproc()
 
         % (13) 将基音周期减小一半，将共振峰频率增加150Hz，重新合成语音，听听是啥感受～
 
+        while pos_syc_t <= n * FL
+            exc_syn_t(pos_syc_t) = G;
+            pos_syc_t = pos_syc_t + ceil(PT / 2);  % Use ceil ensure offset > 0.
+        end
 
-        % exc_syn_t((n-1)*FL+1:n*FL) = ... 将你计算得到的变调合成激励写在这里
-        % s_syn_t((n-1)*FL+1:n*FL) = ...   将你计算得到的变调合成语音写在这里
+        [s_syn_t((n-1)*FL+1:n*FL), zi_syn_t] = ...
+            filter(1, adjust_peak(A, f_sample, 150), ...
+                   exc_syn_t((n-1)*FL+1:n*FL), zi_syn_t);
 
     end
 
     % (6) 在此位置写程序，听一听 s ，exc 和 s_rec 有何区别，解释这种区别
     % 后面听语音的题目也都可以在这里写，不再做特别注明
-    f_sample = 8000;
     sound(s / max(abs(s)), f_sample);
     pause(2);
     sound(exc / max(abs(exc)), f_sample);
@@ -95,6 +102,8 @@ function speechproc()
     sound(s_syn / max(abs(s_syn)), f_sample);
     pause(2);
     sound(s_syn_v / max(abs(s_syn_v)), f_sample);
+    pause(3.5);
+    sound(s_syn_t / max(abs(s_syn_t)), f_sample);
 
     t = [0:L-1] / f_sample;
 

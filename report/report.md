@@ -366,4 +366,39 @@ freqz(1, A, 512, 8000);
 
 可以看到，谐振峰确实提高了 150 Hz。
 
-### 4.2
+### 4.2 合成语音变调不变速
+
+我们（毫无意外地继续）沿用 2.4 中的思路，使用 `pos_syc_t` 变量来保存当前的位置，同时加入滤波器的状态变量。
+
+```matlab
+zi_syn_t = zeros(P,1);
+pos_syc_t = 2 * FL + 1;   % Initial pos.
+```
+
+然后便可以（还是用）用同样的思路生成合成激励，并产生合成语音：
+
+```matlab
+% (10) 在此位置写程序，生成合成激励，并用激励和filter函数产生合成语音
+while pos_syc_t <= n * FL
+    exc_syn_t(pos_syc_t) = G;
+    pos_syc_t = pos_syc_t + ceil(PT / 2);  % Use ceil ensure offset > 0.
+end
+
+[s_syn_t((n-1)*FL+1:n*FL), zi_syn_t] = ...
+    filter(1, adjust_peak(A, f_sample, 150), ...
+           exc_syn_t((n-1)*FL+1:n*FL), zi_syn_t);
+```
+
+最后（正如你所预期的那样）将合成语音播放出来：
+
+```matlab
+sound(s_syn_t / max(abs(s_syn_t)), f_sample);
+```
+
+合成语音（自然而然地）也是 “电灯比油灯进步多了”，不过这一次听起来有点像女性的声音 orz。
+
+我们来看一下第 27 帧时的零极点分布变化：
+
+![Poles change](adjust_poles.png)
+
+可以看到，调整过后系统的极点确实转动了一个角度。这也是共振峰频率增加的标志。
