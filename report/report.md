@@ -284,7 +284,36 @@ sound(s_syn / max(abs(s_syn)), f_sample);
 
 ## 3. 变速不变调
 
-### 3.1
+### 3.1 减慢一倍速度
+
+我们沿用 2.4 中的思路，加入位置变量和滤波器状态变量：
+
+```matlab
+zi_syn_v = zeros(P,1);
+pos_syc_v = 4 * FL + 1;   % Initial pos.
+```
+
+生成长度增大一倍后的合成激励后生成合成语音：
+
+```matlab
+% (11) 不改变基音周期和预测系数，将合成激励的长度增加一倍，再作为filter
+% 的输入得到新的合成语音，听一听是不是速度变慢了，但音调没有变。
+while pos_syc_v <= 2 * n * FL
+    exc_syn_v(pos_syc_v) = G;
+    pos_syc_v = pos_syc_v + PT;
+end
+
+[s_syn_v(2*(n-1)*FL+1:2*n*FL), zi_syn_v] = ...
+    filter(1, A, exc_syn_v(2*(n-1)*FL+1:2*n*FL), zi_syn_v);
+```
+
+播放变速后的合成语音：
+
+```matlab
+sound(s_syn_v / max(abs(s_syn_v)), f_sample);
+```
+
+合成出的语音确实速度减慢了一倍，但音调没有变化。不过，原本 2.4 中就出现了的颤音也被明显拖长了，所以放慢后的语音显得更不真实了一些。
 
 ### 3.2
 

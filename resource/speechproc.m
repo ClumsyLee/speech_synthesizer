@@ -23,6 +23,8 @@ function speechproc()
     % 变速不变调滤波器（假设速度减慢一倍）
     exc_syn_v = zeros(2*L,1);   % 合成的激励信号（脉冲串）
     s_syn_v = zeros(2*L,1);     % 合成语音
+    zi_syn_v = zeros(P,1);
+    pos_syc_v = 4 * FL + 1;   % Initial pos.
 
     hw = hamming(WL);       % 汉明窗
 
@@ -65,10 +67,13 @@ function speechproc()
 
         % (11) 不改变基音周期和预测系数，将合成激励的长度增加一倍，再作为filter
         % 的输入得到新的合成语音，听一听是不是速度变慢了，但音调没有变。
+        while pos_syc_v <= 2 * n * FL
+            exc_syn_v(pos_syc_v) = G;
+            pos_syc_v = pos_syc_v + PT;
+        end
 
-
-        % exc_syn_v((n-1)*FL_v+1:n*FL_v) = ... 将你计算得到的加长合成激励写在这里
-        % s_syn_v((n-1)*FL_v+1:n*FL_v) = ...   将你计算得到的加长合成语音写在这里
+        [s_syn_v(2*(n-1)*FL+1:2*n*FL), zi_syn_v] = ...
+            filter(1, A, exc_syn_v(2*(n-1)*FL+1:2*n*FL), zi_syn_v);
 
         % (13) 将基音周期减小一半，将共振峰频率增加150Hz，重新合成语音，听听是啥感受～
 
@@ -86,6 +91,8 @@ function speechproc()
     sound(exc / max(abs(exc)), f_sample);
     pause(2);
     sound(s_rec / max(abs(s_rec)), f_sample);
+    pause(2);
+    sound(s_syn_v / max(abs(s_syn_v)), f_sample);
 
     t = [0:L-1] / f_sample;
 
