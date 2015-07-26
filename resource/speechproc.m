@@ -75,13 +75,14 @@ function speechproc()
 
     % (6) 在此位置写程序，听一听 s ，exc 和 s_rec 有何区别，解释这种区别
     % 后面听语音的题目也都可以在这里写，不再做特别注明
-    % sound(s);
-    % pause(2);
-    % sound(exc);
-    % pause(2);
-    % sound(s_rec);
+    f_sample = 8000;
+    sound(s / max(abs(s)), f_sample);
+    pause(2);
+    sound(exc / max(abs(exc)), f_sample);
+    pause(2);
+    sound(s_rec / max(abs(s_rec)), f_sample);
 
-    t = [0:L-1] / 8000;
+    t = [0:L-1] / f_sample;
 
     figure
     subplot 311

@@ -110,21 +110,22 @@ end
 ```matlab
 % (6) 在此位置写程序，听一听 s ，exc 和 s_rec 有何区别，解释这种区别
 % 后面听语音的题目也都可以在这里写，不再做特别注明
-sound(s);
+f_sample = 8000;
+sound(s / max(abs(s)), f_sample);
 pause(2);
-sound(exc);
+sound(exc / max(abs(exc)), f_sample);
 pause(2);
-sound(s_rec);
+sound(s_rec / max(abs(s_rec)), f_sample);
 ```
 
-可以听出来，`s(n)` 和 `s^(n)` 几乎没有区别，都是带有杂音的“电灯比油灯进步多了”；而 `e(n)` 信号听起来虽然也是这句话，但是话的音量变小了不少，杂音也变得很重。
+可以听出来，`s(n)` 和 `s^(n)` 几乎没有区别，都是清晰的的“电灯比油灯进步多了”；而 `e(n)` 信号听起来虽然也是这句话，但是话的音量变小了不少，杂音的相对大小也增大了。
 
 这是因为 `s^(n)` 信号几乎是 `s(n)` 的复原，而 `e(n)` 信号则是原声音减去预测值之后的残差。所以，能较好符合发声模型的部分（人声）被大幅减弱，而不能很好被模型预测的部分（噪声）便占据了主导地位。这个现象的存在说明预测模型是成功的，能够起到压缩信息的作用。
 
 将这三个信号画出：
 
 ```matlab
-t = [0:L-1] / 8000;
+t = [0:L-1] / f_sample;
 
 figure
 subplot 311
@@ -241,8 +242,7 @@ sound(sig, f_sample);
 
 ```matlab
 s = filter(1, [1, -1.3789, 0.9506], sig);
-s = s / max(s);  % Make sure s won't be clipped by `sound`.
-sound(s, f_sample);
+sound(s / max(abs(s)), f_sample);  % Make sure s won't be clipped by `sound`.
 ```
 
 ![e(n) to s(n)](en_to_sn.png)
